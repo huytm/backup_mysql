@@ -1,0 +1,22 @@
+{
+    "mysql": {
+        "user": "USER_MYSQL",
+        "password": "PASSWORD_MYSQL",
+        "database": "DATABASE_MYSQL_TO_BACKUP"
+    },
+    "backup": {
+        "backup_folder": "/opt/my_backup_folder",
+        "backup_file_name": "my_backup_file",
+        "ftp_server": "10.10.10.10",
+        "remote_sync_path": "/backup/folder/in/ftp/server",
+        "remove_days": 10
+    },
+    "telegram": {
+        "token": "your_telegram_token",
+        "chat_id": "your_telegram_chat_id"
+    },
+    "slack": {
+        "token": "your_slack_token",
+        "channel": "your_slack_channel"
+    }
+}
