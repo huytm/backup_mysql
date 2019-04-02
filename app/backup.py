@@ -23,8 +23,8 @@ class Backup(object):
         self.telegram_channel       = settings["telegram"]["chat_id"]
         self.is_sync                = settings["sync"]["sync"]
         self.is_delete_file         = settings["delete_old_file"]["delete_old_file"]
-        self.is_send_notify_slack   = settings["telegram"]["send_notify"]
-        self.is_send_notify_telegram = settings["slack"]["send_notify"]
+        self.is_send_notify_telegram   = settings["telegram"]["send_notify"]
+        self.is_send_notify_slack = settings["slack"]["send_notify"]
         self.backup_type            = settings["mysql"]["backup_type"]  
 
         self.notify_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
