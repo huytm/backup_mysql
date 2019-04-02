@@ -8,7 +8,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', filename='
 
 def sync_to_ftp(settings):
     try:
-        command = "rsync -arv " + settings["backup"]["backup_folder"] + " root@" + settings["backup"]["ftp_server"] + ":" + settings["backup"]["remote_sync_path"]
+        command = "rsync -arv " + settings["backup"]["backup_folder"] + " root@" + settings["sync"]["ftp_server"] + ":" + settings["sync"]["remote_sync_path"]
         os.system(command)
     except Exception as ex:
         logging.warning(" Không thể sync tới FTP server " + ex)
@@ -32,7 +32,7 @@ def render_message_slack(datetime, file_size, file_name):
 
 def remove_old_folder(settings):
     now = time.time()
-    numdays = 86400 * settings["backup"]["remove_days"]
+    numdays = 86400 * settings["delete_old_file"]["remove_days"]
     folder = settings["backup"]["backup_folder"]
 
     try:
@@ -42,4 +42,7 @@ def remove_old_folder(settings):
                shutil.rmtree(f)
     except Exception as ex:    
         logging.warning(" Cannot delete old folder " + ex)
-       
+
+def check_file_size(file_path):
+    file_info = os.stat(file_path).st_size
+    return convert_bytes(file_info)       

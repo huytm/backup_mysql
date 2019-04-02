@@ -14,16 +14,16 @@ backup mysql with python 3
 - Tự động sync đến FTP server.
 - Xóa các folder backup cũ trong vòng **x** ngày
 
-# How to (Example with CentOS 7)
+# Ví dụ (Thực hiện trên CentOS 7)
 
-#### 1. Install Requirement Packages
+#### 1. Cài đặt các gói cần thiết
 
 ```
 yum groupinstall "Development Tools" -y
 yum install git -y
 ```
 
-#### 2. Install python 3.6
+#### 2. Cài đặt python 3.6
 
 ```
 yum install https://centos7.iuscommunity.org/ius-release.rpm -y
@@ -44,7 +44,7 @@ cd /opt/
 git clone https://github.com/huytm/backup_mysql.git
 ```
 
-#### 4. Create virtual environmet and install python lib
+#### 4. Tạo virtual environmet và cài đặt thư viện cần thiết
 
 ```
 cd /opt/backup_mysql
@@ -53,36 +53,127 @@ source env/bin/activate
 pip install -r requirement.txt
 ```
 
-#### 5. Change setting
+#### 5. Sửa file setting
 
-Modify your setting in /opt/backup_mysql/settings/settings.json
+Sửa file setting tại  `/opt/backup_mysql/settings/settings.json`
+
+**backup_type** - setting của các loại backup_type (kiểu backup) gồm:
+
+- all
+- database
+- table
+
+**Tính năng mở rộng** - setting của các tính năng mở rộng gồm:
+
+- "sync": true / false 
+
+Có hoặc không sync dữ liệu. Nếu chọn *true*, 2 server phải được cài đặt rsync và phải SSH less không cần password với nhau
+
+- "send_notify": true / false 
+
+Có hoặc không gửi thông báo Slack hoặc Telegram
+
+- "delete_old_file": true / false
+
+Có hoặc không gửi xóa các file backup cũ trên server chạy script. Nếu có xóa trong vòng "remove_days" ngày
+
 
 ```json
 {
     "mysql": {
-        "user": "USER_MYSQL",
-        "password": "PASSWORD_MYSQL",
-        "database": "DATABASE_MYSQL_TO_BACKUP"
+        "user": "MYSQL_USER",
+        "password": "MYSQL_PASSWORD",
+        "backup_type": "table", 
+        "database": "MYSQL_DATABASES",
+        "tables": "table1, table2, table3"
     },
     "backup": {
-        "backup_folder": "/opt/my_backup_folder",
-        "backup_file_name": "my_backup_file",
+        "backup_folder": "/your/backup/folder",
+        "backup_file_name": "your_back_up_file_name"
+    },
+    "delete_old_file": {
+        "delete_old_file": true,
+        "remove_days": 10
+    },
+    "sync": {
+        "sync": false,
         "ftp_server": "10.10.10.10",
-        "remote_sync_path": "/backup/folder/in/ftp/server",
-        "remove_days": 10 #Keep folder in 10 days
+        "remote_sync_path": "/backup/folder/in/ftp/server"
     },
     "telegram": {
+        "send_notify": true,
         "token": "your_telegram_token",
         "chat_id": "your_telegram_chat_id"
     },
     "slack": {
+        "send_notify": true,
         "token": "your_slack_token",
         "channel": "your_slack_channel"
     }
 }
 ```
 
-#### 6. Add script to crontab
+- Ví dụ Backup **tất cả** database và **xóa** các file trong vòng 10 ngày: 
+
+```
+...
+    "mysql": {
+        "user": "MYSQL_USER",
+        "password": "MYSQL_PASSWORD",
+        "backup_type": "table", 
+    ...
+
+    "delete_old_file": {
+        "delete_old_file": true,
+        "remove_days": 10
+    },
+```
+
+- Ví dụ Backup **một database** và gửi thông báo đến slack:
+
+```
+...
+    "mysql": {
+        "user": "MYSQL_USER",
+        "password": "MYSQL_PASSWORD",
+        "backup_type": "database",
+        "database": "my_database",
+    ...
+    
+    "slack": {
+        "send_notify": true,
+        "token": "your_slack_token",
+        "channel": "your_slack_channel"
+    }
+```
+
+- Ví dụ Backup **một table**, **sync** sang ftp server, **gửi thông báo đến telegram**
+
+```
+...
+    "mysql": {
+        "user": "MYSQL_USER",
+        "password": "MYSQL_PASSWORD",
+        "backup_type": "table",
+        "database": "my_database",
+        "tables": "table1, table2, table3"
+    ...
+
+    "sync": {
+        "sync": true,
+        "ftp_server": "10.10.10.10",
+        "remote_sync_path": "/backup/folder/in/ftp/server"
+    },
+
+    ...
+    "telegram": {
+        "send_notify": true,
+        "token": "your_telegram_token",
+        "chat_id": "your_telegram_chat_id"
+    },
+```
+
+#### 6. Thêm script vào crontab
 
 ```
 crontab -e

@@ -9,11 +9,11 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', filename='
 with open(app_path + '/settings/settings.json') as data:
     settings = json.load(data)
 
-def run_backup():
+def run_backup(settings):
     try:
         backup = Backup(settings)
         backup.backup_database()
     except Exception as ex:
         logging.warning("Cannot read setting file" + ex)
 
-run_backup()
+run_backup(settings)
