@@ -61,7 +61,7 @@
     },
 ```
 
-### 4. Backup 1 table, send notify to telegram, and dont send notify to slack
+### 4. Backup 1 table, send notify to telegram, and dont send notify slack
 
 ```
 ...
