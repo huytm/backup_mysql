@@ -57,7 +57,7 @@ pip install -r requirement.txt
 
 ### 5. Edit setting file with your purpose
 
-> Some example you can fint at here: [Example](https://github.com/nhanhoadocs/backup-mysql-with-python3/blob/master/example/example.md)
+> Some example you can fint at here: [Example](https://github.com/huytm/backup_mysql/blob/master/example/example.md)
 
 Edit file setting at  `/opt/backup_mysql/settings/settings.json`.
 
