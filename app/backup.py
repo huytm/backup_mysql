@@ -1,6 +1,9 @@
 import os
 import time
 import datetime
+import boto
+import boto.s3.connection
+from boto.s3.key import Key
 from .slack_notify import Slack
 from .telegram_notify import Telegram
 from .email_notify import EmailNotify
@@ -27,7 +30,12 @@ class Backup(object):
         self.is_send_notify_telegram   = settings["telegram"]["send_notify"]
         self.is_send_notify_slack   = settings["slack"]["send_notify"]
         self.is_sendmail            = settings["email"]["send_notify"]    
-        self.backup_type            = settings["mysql"]["backup_type"]  
+        self.backup_type            = settings["mysql"]["backup_type"]
+        self.backup_s3              = settings["mysql"]["backup_s3"]
+        self.s3_endpoint            = settings["mysql"]["s3_endpoint"] 
+        self.s3_access_key          = settings["mysql"]["s3_access_key"] 
+        self.s3_secret_key          = settings["mysql"]["s3_secret_key"] 
+        self.s3_bucket              = settings["mysql"]["s3_bucket"] 
 
         self.notify_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -66,6 +74,29 @@ class Backup(object):
                 sendmail_message = common.render_message_email(datetime=self.notify_date, file_size=backup_size, file_name=self.output_startw + "_" + self.current_time +".sql.gz")
                 sendmail = EmailNotify(self.settings, self.notify_date, sendmail_message)
                 sendmail.send_email()
+            
+            if self.backup_s3 is True:
+                file_name=self.output_startw + "_" + self.current_time +".sql.gz"
+                try:
+                    conn = boto.connect_s3(
+                        aws_access_key_id = self.s3_access_key,
+                        aws_secret_access_key = self.s3_secret_key,
+                        host = self.s3_endpoint,
+                        is_secure=True,               # uncomment if you are not using ssl
+                        calling_format = boto.s3.connection.OrdinaryCallingFormat(),
+                        )
+
+                    bucket = conn.get_bucket(self.s3_bucket)
+                    
+                    k = bucket.new_key("'" + file_name + "'")
+                    k.set_contents_from_filename("'" + backup_dir + "/" + file_name + "'")
+                    # key = bucket.get_key('IMG_4020-1.jpg')
+                    # key.get_contents_to_filename('/home/thaonv/test.txt')
+                    # key.set_canned_acl('public-read')
+                    # url = key.generate_url(0, query_auth=False, force_http=True)
+
+                except Exception as ex:
+                    logging.warning("backup " + ex)
 
         except Exception as ex:
             logging.warning("backup " + ex)
@@ -88,5 +119,5 @@ class Backup(object):
                 backup_command = "mysqldump -u" + self.db_user_name + " -p" + self.db_password + " " + "--all-databases" + " 2>/dev/null | gzip > " + backup_dir + "/"+ self.output_startw + "_" + self.current_time +".sql.gz"
             else:
                 backup_command = "mysqldump -u" + self.db_user_name + " " + "--all-databases" + " 2>/dev/null | gzip > " + backup_dir + "/"+ self.output_startw + "_" + self.current_time +".sql.gz"    
-
+        if 
         return backup_command
