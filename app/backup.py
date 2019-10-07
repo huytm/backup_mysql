@@ -31,11 +31,11 @@ class Backup(object):
         self.is_send_notify_slack   = settings["slack"]["send_notify"]
         self.is_sendmail            = settings["email"]["send_notify"]    
         self.backup_type            = settings["mysql"]["backup_type"]
-        self.backup_s3              = settings["mysql"]["backup_s3"]
-        self.s3_endpoint            = settings["mysql"]["s3_endpoint"] 
-        self.s3_access_key          = settings["mysql"]["s3_access_key"] 
-        self.s3_secret_key          = settings["mysql"]["s3_secret_key"] 
-        self.s3_bucket              = settings["mysql"]["s3_bucket"] 
+        self.backup_s3              = settings["backup"]["backup_s3"]
+        self.s3_endpoint            = settings["backup"]["s3_endpoint"] 
+        self.s3_access_key          = settings["backup"]["s3_access_key"] 
+        self.s3_secret_key          = settings["backup"]["s3_secret_key"] 
+        self.s3_bucket              = settings["backup"]["s3_bucket"] 
 
         self.notify_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.current_date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -88,8 +88,8 @@ class Backup(object):
 
                     bucket = conn.get_bucket(self.s3_bucket)
                     
-                    k = bucket.new_key("'" + file_name + "'")
-                    k.set_contents_from_filename("'" + backup_dir + "/" + file_name + "'")
+                    k = bucket.new_key(file_name)
+                    k.set_contents_from_filename(backup_dir + "/" + file_name)
                     # key = bucket.get_key('IMG_4020-1.jpg')
                     # key.get_contents_to_filename('/home/thaonv/test.txt')
                     # key.set_canned_acl('public-read')
@@ -118,6 +118,5 @@ class Backup(object):
             if (self.db_password).strip() != '' and self.db_password is not None:
                 backup_command = "mysqldump -u" + self.db_user_name + " -p" + self.db_password + " " + "--all-databases" + " 2>/dev/null | gzip > " + backup_dir + "/"+ self.output_startw + "_" + self.current_time +".sql.gz"
             else:
-                backup_command = "mysqldump -u" + self.db_user_name + " " + "--all-databases" + " 2>/dev/null | gzip > " + backup_dir + "/"+ self.output_startw + "_" + self.current_time +".sql.gz"    
-        if 
+                backup_command = "mysqldump -u" + self.db_user_name + " " + "--all-databases" + " 2>/dev/null | gzip > " + backup_dir + "/"+ self.output_startw + "_" + self.current_time +".sql.gz" 
         return backup_command
