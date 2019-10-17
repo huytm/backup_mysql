@@ -70,8 +70,13 @@ Edit file setting at  `/opt/backup_mysql/settings/settings.json`.
         "tables": "table1, table2, table3"
     },
     "backup": {
+        "backup_s3": false,
         "backup_folder": "/your/backup/folder",
-        "backup_file_name": "your_back_up_file_name"
+        "backup_file_name": "your_back_up_file_name",
+        "s3_endpoint":"s3.cloud365.vn",
+        "s3_access_key":"ACCESS_KEY",
+        "s3_secret_key":"SECRET_KEY",
+        "s3_bucket":"your_bucket_name"
     },
     "delete_old_file": {
         "delete_old_file": true,
@@ -117,6 +122,11 @@ Edit file setting at  `/opt/backup_mysql/settings/settings.json`.
 - table : `Backup table(s).`
 
 **b. Extended feature:**
+
+- "backup_s3": true / false
+    ```
+    Backup to s3 or not. If settings is true, you must specify some other information about s3 access and secret key.
+    ```
 
 - "sync": true / false 
 
