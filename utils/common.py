@@ -3,6 +3,9 @@ import json
 import logging
 import time
 import shutil
+import boto
+import boto.s3.connection
+from boto.s3.key import Key
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', filename='/var/log/backup.log',level=logging.DEBUG, datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -66,4 +69,9 @@ def remove_old_folder(settings):
 
 def check_file_size(file_path):
     file_info = os.stat(file_path).st_size
-    return convert_bytes(file_info)       
+    return convert_bytes(file_info)
+
+# def remove_old_file_s3(setings):
+    
+
+    
